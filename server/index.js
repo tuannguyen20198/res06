@@ -3,6 +3,8 @@ require("dotenv").config();
 const cors = require("cors");
 const dbconn = require("./config/dbconn");
 const app = express();
+const initRoutes = require("./routes");
+
 app.use(
   cors({
     origin: process.env.CLIENT_URL,
@@ -10,8 +12,8 @@ app.use(
 );
 app.use(express.json());
 app.use(express.urlencoded({extended: true}));
+initRoutes(app);
 
-app.use("/", (req, res) => res.send("SERVER ON"));
 dbconn();
 
 const PORT = process.env.PORT || 7777;
