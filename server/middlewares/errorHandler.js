@@ -1,10 +1,17 @@
+// errorHandler.js
 const errHandler = (error, req, res, next) => {
+  console.log(error);
   const statusCode = res.statusCode === 200 ? 500 : res.statusCode;
+  const errorMessage =
+    error.message.replace("ValidationError: ", "").replace(/"/g, "") ||
+    "An unexpected error occurred.";
+
   return res.status(statusCode).json({
     success: false,
-    mes: error.message,
+    message: errorMessage,
   });
 };
+
 const throwErrorWithStatus = (code, message, res, next) => {
   const error = new Error(message);
   res.status(code);
