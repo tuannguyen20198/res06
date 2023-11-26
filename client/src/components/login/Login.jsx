@@ -10,6 +10,8 @@ import useAppStore from "~/store/useAppStore";
 
 const Login = () => {
   const [variant, setvariant] = useState("LOGIN");
+  const [isLoading, setIsLoading] = useState(false);
+
   const {setModal} = useAppStore();
   const {
     register,
@@ -25,7 +27,9 @@ const Login = () => {
 
   const onSubmit = async (data) => {
     if (variant === "REGISTER") {
+      setIsLoading(true);
       const response = await apiRegster(data);
+      setIsLoading(false);
       if (response.success) {
         Swal.fire({
           icon: "success",
