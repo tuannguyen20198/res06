@@ -1,10 +1,16 @@
 import clsx from "clsx";
 import React, {useEffect, useState} from "react";
-import {Button, InputForm} from "..";
+import {Button, InputForm, InputRadio} from "..";
 import {useForm} from "react-hook-form";
+import {apiRegster, apiSignIn} from "~/apis/auth";
+import Swal from "sweetalert2";
+import {toast} from "react-toastify";
+import withRouter from "~/hocs/withRouter";
+import useAppStore from "~/store/useAppStore";
 
 const Login = () => {
   const [variant, setvariant] = useState("LOGIN");
+  const {setModal} = useAppStore();
   const {
     register,
     formState: {errors},
@@ -17,8 +23,30 @@ const Login = () => {
     reset();
   }, [variant]);
 
-  const onSubmit = (data) => {
-    console.log(data);
+  const onSubmit = async (data) => {
+    if (variant === "REGISTER") {
+      const response = await apiRegster(data);
+      if (response.success) {
+        Swal.fire({
+          icon: "success",
+          title: "Congrats!",
+          text: response.mes,
+          showConfirmButton: true,
+          confirmButtonText: "Go sign in",
+        }).then(({isConfirmed}) => {
+          if (isConfirmed) setvariant("LOGIN");
+        });
+      } else toast.error(response.mes);
+    }
+    if (variant === "LOGIN") {
+      //Login
+      const {name, role, ...payload} = data;
+      const response = await apiSignIn(payload);
+      if (response.success) {
+        toast.success(response.mes);
+        setModal(false, null);
+      } else toast.error(response.mes);
+    }
   };
 
   return (
@@ -56,7 +84,13 @@ const Login = () => {
           register={register}
           id="phone"
           placeholder="Type your phone number here"
-          validate={{required: "This field connot empty."}}
+          validate={{
+            required: "This field connot empty.",
+            pattern: {
+              value: /(0[3|5|7|8|9])+([0-9]{8})\b/,
+              message: "Phone number invalid.",
+            },
+          }}
           errors={errors}
         />
         <InputForm
@@ -78,6 +112,19 @@ const Login = () => {
             placeholder="Type your phone name here"
             validate={{required: "This field connot empty."}}
             errors={errors}
+          />
+        )}
+        {variant === "REGISTER" && (
+          <InputRadio
+            label="Type account"
+            register={register}
+            id="role"
+            validate={{required: "This field connot empty."}}
+            errors={errors}
+            options={[
+              {label: "User", value: "USER"},
+              {label: "Agent", value: "AGENT"},
+            ]}
           />
         )}
         <Button handleOnClick={handleSubmit(onSubmit)} className="py-2 my-6">
