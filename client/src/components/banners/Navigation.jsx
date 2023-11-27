@@ -5,7 +5,7 @@ import {navigations} from "~/utils/constants";
 import {clsx} from "clsx";
 import withRouter from "~/hocs/withRouter";
 import {twMerge} from "tailwind-merge";
-import useUserStore from "~/store/useUserStore";
+import {useUserStore} from "~/store/useUserStore";
 import useAppStore from "~/store/useAppStore";
 import Login from "../login/Login";
 const Navigation = ({location, navigate}) => {

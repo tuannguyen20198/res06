@@ -7,12 +7,14 @@ import Swal from "sweetalert2";
 import {toast} from "react-toastify";
 import withRouter from "~/hocs/withRouter";
 import useAppStore from "~/store/useAppStore";
+import {useUserStore} from "~/store/useUserStore";
 
 const Login = () => {
   const [variant, setvariant] = useState("LOGIN");
   const [isLoading, setIsLoading] = useState(false);
 
   const {setModal} = useAppStore();
+  const {token, setToken} = useUserStore();
   const {
     register,
     formState: {errors},
@@ -48,10 +50,13 @@ const Login = () => {
       const response = await apiSignIn(payload);
       if (response.success) {
         toast.success(response.mes);
+        setToken(response.accessToken);
         setModal(false, null);
       } else toast.error(response.mes);
     }
   };
+
+  console.log(token);
 
   return (
     <div
